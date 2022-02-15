@@ -1,0 +1,12 @@
+start screen -
+    four in a row -
+        x: 97 -> 703
+        y: 237 -> 331
+
+    tic tac toe -
+        x: 97 -> 703
+        y: 332 -> 426
+
+    hangman -
+        x: 97 -> 703
+        y: 427 -> 522
