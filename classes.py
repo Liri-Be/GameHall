@@ -59,7 +59,7 @@ class Game:
         """
         # present choose amount of rounds
         # present background
-        rnd_screen = pygame.image.load('rounds.png')
+        rnd_screen = pygame.image.load(r'photos\rounds.png')
         self.screen.blit(rnd_screen, (0, 0))
         pygame.display.update()
 
@@ -457,8 +457,8 @@ class TicTacToe(Game):
         self.cols = 3
         self.rows = 3
         self.game_board = [[0 * x * y for x in range(self.cols)] for y in range(self.rows)]
-        self.x_pic = pygame.image.load('x.png')
-        self.o_pic = pygame.image.load('o.png')
+        self.x_pic = pygame.image.load(r'photos\x.png')
+        self.o_pic = pygame.image.load(r'photos\o.png')
 
     def playOneRound(self):
         turn = 0

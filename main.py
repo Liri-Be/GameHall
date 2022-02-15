@@ -3,9 +3,9 @@ from time import sleep
 import pygame
 import sys
 
-INST_FOURINAROW = pygame.image.load('fourinarow_instructions.png')
-INST_TICTACTOE = pygame.image.load('fourinarow_instructions.png')
-INST_HANGMAN = pygame.image.load('fourinarow_instructions.png')
+INST_FOURINAROW = pygame.image.load(r'photos\fourinarow_instructions.png')
+INST_TICTACTOE = pygame.image.load(r'photos\fourinarow_instructions.png')
+INST_HANGMAN = pygame.image.load(r'photos\fourinarow_instructions.png')
 
 
 def playTheGame(screen, game_name):
@@ -51,7 +51,7 @@ def main():
     # start
     screen = pygame.display.set_mode((700, 700))
     pygame.display.set_caption("Game Hall")
-    icon = pygame.image.load('board-game.png')
+    icon = pygame.image.load(r'photos\board-game.png')
     pygame.display.set_icon(icon)
 
     screen.blit(icon, (60, 80))
@@ -59,12 +59,12 @@ def main():
     sleep(1.25)
 
     # set screen, tile and icon
-    start_screen = pygame.image.load('start_screen.png')
+    start_screen = pygame.image.load(r'photos\start_screen.png')
     screen.blit(start_screen, (0, 0))
     pygame.display.update()
 
     # play background music
-    pygame.mixer.Sound('bg_music.mp3').play(-1)
+    pygame.mixer.Sound(r'music\bg_music.mp3').play(-1)
 
     # start the app
     running = True
