@@ -669,8 +669,14 @@ class Hangman(Game):
         self.leg_right = pygame.image.load(r'photos\Hangman\leg-r.png')
 
     def playOneRound(self):
-        for _ in range(1000000):
-            pass
+        # todo: get date from user
+        # todo: check if valid
+        # todo: check if right or wrong
+        # todo: present on screen
+        # todo: present a win/lose
+        self.drawWord()
+        self.drawWrong()
+        sleep(2)
         return True, 0, False
 
     def checkWin(self):
@@ -705,30 +711,6 @@ class Hangman(Game):
                                                                       False, (0, 0, 0), (173, 216, 230)), (315, 100))
         self.screen.blit(self.font.render("Type the letters", False, (0, 0, 0), (173, 216, 230)), (320, 165))
 
-        # the guess word
-        guess_bars_txt = ""
-        for letter in self.secret_word:
-            if letter.lower() in self.user_guess:
-                guess_bars_txt += letter
-            else:
-                guess_bars_txt += "_"
-            guess_bars_txt += "  "
-
-        guess_bars = pygame.font.SysFont("arial bold", 80).render(guess_bars_txt, False, (0, 0, 0), (173, 216, 230))
-        self.screen.blit(guess_bars, (330, 280))
-
-        # wrong guesses
-        guess_bars = self.font.render("Wrong guesses:", False, (0, 0, 0), (173, 216, 230))
-        self.screen.blit(guess_bars, (30, 515))
-        wrong_txt = ""
-        for letter in self.user_guess:
-            if letter not in self.secret_word and letter.upper() not in self.secret_word:
-                wrong_txt += letter
-                wrong_txt += "  "
-
-        guess_bars = self.font.render(wrong_txt, False, (0, 0, 0), (173, 216, 230))
-        self.screen.blit(guess_bars, (30, 570))
-
         # the hangman
         self.screen.blit(self.wood, (5, 70))
 
@@ -746,6 +728,41 @@ class Hangman(Game):
         if self.wrong_guesses > 5:
             self.screen.blit(self.leg_right, (207, 346))
 
+        pygame.display.update()
+        return
+
+    def drawWord(self):
+        """
+        draw the guesses and the empty places of the word needed to be guessed
+        :return: None
+        """
+        # the guess word
+        guess_bars_txt = ""
+        for letter in self.secret_word:
+            if letter.lower() in self.user_guess:
+                guess_bars_txt += letter
+            else:
+                guess_bars_txt += "_"
+            guess_bars_txt += "  "
+
+        guess_bars = pygame.font.SysFont("arial bold", 80).render(guess_bars_txt, False, (0, 0, 0), (173, 216, 230))
+        self.screen.blit(guess_bars, (330, 280))
+        pygame.display.update()
+
+    def drawWrong(self):
+        """
+        present the wrong letter that have been guessed
+        :return: None
+        """
+        # wrong guesses
+        self.screen.blit(self.font.render("Wrong guesses:", False, (0, 0, 0), (173, 216, 230)), (30, 515))
+        wrong_txt = ""
+        for letter in self.user_guess:
+            if letter not in self.secret_word and letter.upper() not in self.secret_word:
+                wrong_txt += letter
+                wrong_txt += "  "
+
+        self.screen.blit(self.font.render(wrong_txt, False, (0, 0, 0), (173, 216, 230)), (30, 570))
         pygame.display.update()
         return
 
