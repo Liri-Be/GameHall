@@ -4,18 +4,24 @@ import sys
 from time import time, sleep
 import pygame
 
-
 pygame.font.init()
 
 
 class Game:
     def __init__(self, name, screen):
+        """
+        init objects
+        :param name: the name of the game
+        :type name: str
+        :param screen: the pygame screen of the game
+        :type screen: pygame.Surface
+        """
         self.name = name
         self.rounds = 0  # number of rounds for a win
         self.curr_player = 0
         self.screen = screen  # pygame screen
         self.screen_size = 700
-        self.font = pygame.font.SysFont("arial bold",  50)  # font for pygame
+        self.font = pygame.font.SysFont("arial bold", 50)  # font for pygame
         self.stat = {'wins': 0, 'ties': 0, 'turns': [], 'time': [], 'choosing': []}
 
     def playGame(self):
@@ -32,13 +38,13 @@ class Game:
             self.resetAll()
             finish = time()
             curr_round += 1
-            self.statistics_round(won, turns, finish-start, 0, curr_round, tie)
+            self.statistics_round(won, turns, finish - start, 0, curr_round, tie)
 
         self.statistics_game(curr_round)
         return
 
     def playOneRound(self):
-        return 0, 0, 0
+        return True, 0, False
 
     def checkWin(self):
         pass
@@ -59,7 +65,7 @@ class Game:
         """
         # present choose amount of rounds
         # present background
-        rnd_screen = pygame.image.load(r'photos\rounds.png')
+        rnd_screen = pygame.image.load(r'photos\General\rounds.png')
         self.screen.blit(rnd_screen, (0, 0))
         pygame.display.update()
 
@@ -142,12 +148,18 @@ class Game:
     def statistics_round(self, won, turns, round_time, choosing, curr_round, tie):
         """
         calculate and present the statistics of each round of the game
-        :param won: whether the user won the round, boolean
-        :param turns: number of turns this round took, int
-        :param round_time: the time the round took, float
-        :param choosing: the average time it took the user to choose an action, float
-        :param curr_round: number of the current round, int
-        :param tie: whether the round ended with a tie, boolean
+        :param won: whether the user won the round
+        :type won: bool
+        :param turns: number of turns this round took
+        :type turns: int
+        :param round_time: the time the round took
+        :type round_time: float
+        :param choosing: the average time it took the user to choose an action
+        :type choosing: float
+        :param curr_round: number of the current round
+        :type curr_round: int
+        :param tie: whether the round ended with a tie
+        :type tie: bool
         :return: the msg of the statistics, string
         """
         self.stat['time'].append(round_time)  # save time
@@ -197,7 +209,7 @@ class Game:
         for i in range(len(msg.split('\n')) - 1):
             stat_msg = pygame.font.SysFont("arial", 40).render(msg.split('\n')[i], False, (0, 0, 0), (173, 216, 230))
             k = 10 if i == 0 else 50
-            self.screen.blit(stat_msg, (k, i*50 + 150))
+            self.screen.blit(stat_msg, (k, i * 50 + 150))
         pygame.display.flip()  # display the msg
 
         while True:  # present until pressed mouse
@@ -217,7 +229,8 @@ class Game:
     def statistics_game(self, rounds):
         """
         calculate and present the statistics of the whole game
-        :param rounds: number of rounds the game took, int
+        :param rounds: number of rounds the game took
+        :type rounds: int
         :return: the msg of the statistics, string
         """
         avg_wins = self.stat['wins'] / rounds  # calc avg wins per round
@@ -241,7 +254,7 @@ class Game:
         for i in range(len(msg.split('\n')) - 1):
             stat_msg = pygame.font.SysFont("arial", 40).render(msg.split('\n')[i], False, (0, 0, 0), (173, 216, 230))
             k = 10 if i == 0 else 50
-            self.screen.blit(stat_msg, (k, i*50 + 95))
+            self.screen.blit(stat_msg, (k, i * 50 + 95))
         pygame.display.flip()  # display the msg
 
         while True:  # present until pressed mouse
@@ -396,7 +409,9 @@ class FourInARow(Game):
         """
         Find the place to put the token to
         :param column: the column to drop in
+        :type column: int
         :param player: 1 or 2 - the player number
+        :type player: int
         :return msg with the place in the board or msg that says the column is full:
         """
         msg = ""
@@ -457,8 +472,8 @@ class TicTacToe(Game):
         self.cols = 3
         self.rows = 3
         self.game_board = [[0 * x * y for x in range(self.cols)] for y in range(self.rows)]
-        self.x_pic = pygame.image.load(r'photos\x.png')
-        self.o_pic = pygame.image.load(r'photos\o.png')
+        self.x_pic = pygame.image.load(r'photos\TicTacToe\x.png')
+        self.o_pic = pygame.image.load(r'photos\TicTacToe\o.png')
 
     def playOneRound(self):
         turn = 0
@@ -542,8 +557,11 @@ class TicTacToe(Game):
         """
         check if the position that chosen is empty and if so place a token there
         :param pos_x: x part of the position
+        :type pos_x: int
         :param pos_y: y part of the position
+        :type pos_y: int
         :param token: the token - X or O
+        :type token: int
         :return: if empty or not - bool
         """
         # get the row and the column
@@ -639,16 +657,97 @@ class Hangman(Game):
     def __init__(self, screen):
         super().__init__("Hangman", screen)
         self.list_words = ["Instagram"]
-        self.secret_word = None
+        self.secret_word = "Game"
+        self.user_guess = ["f", "a", "g"]
+        self.wrong_guesses = 1
+        self.wood = pygame.image.load(r'photos\Hangman\wood.png')
+        self.head = pygame.image.load(r'photos\Hangman\head.png')
+        self.body = pygame.image.load(r'photos\Hangman\body.png')
+        self.hand_left = pygame.image.load(r'photos\Hangman\hand-l.png')
+        self.hand_right = pygame.image.load(r'photos\Hangman\hand-r.png')
+        self.leg_left = pygame.image.load(r'photos\Hangman\leg-l.png')
+        self.leg_right = pygame.image.load(r'photos\Hangman\leg-r.png')
 
     def playOneRound(self):
-        pass
+        for _ in range(1000000):
+            pass
+        return True, 0, False
 
     def checkWin(self):
         pass
 
     def checkTie(self):
         pass
+
+    def isValidLetter(self, letter):
+        """
+        check if the letter the user entered is valid (a letter in english)
+        :param letter: the letter the user entered
+        :type letter: str
+        :return: True or False
+        """
+        if not letter.isalpha():
+            print("only letters")
+            return False
+        self.user_guess.append(letter.lower())
+        return True
+
+    def drawBoard(self):
+        """
+        draw the board of the game in each turn
+        :return: None
+        """
+        # draw the screen
+        self.screen.fill((173, 216, 230))
+
+        # headings
+        self.screen.blit(pygame.font.SysFont("arial bold", 80).render("Try to guess!",
+                                                                      False, (0, 0, 0), (173, 216, 230)), (315, 100))
+        self.screen.blit(self.font.render("Type the letters", False, (0, 0, 0), (173, 216, 230)), (320, 165))
+
+        # the guess word
+        guess_bars_txt = ""
+        for letter in self.secret_word:
+            if letter.lower() in self.user_guess:
+                guess_bars_txt += letter
+            else:
+                guess_bars_txt += "_"
+            guess_bars_txt += "  "
+
+        guess_bars = pygame.font.SysFont("arial bold", 80).render(guess_bars_txt, False, (0, 0, 0), (173, 216, 230))
+        self.screen.blit(guess_bars, (330, 280))
+
+        # wrong guesses
+        guess_bars = self.font.render("Wrong guesses:", False, (0, 0, 0), (173, 216, 230))
+        self.screen.blit(guess_bars, (30, 515))
+        wrong_txt = ""
+        for letter in self.user_guess:
+            if letter not in self.secret_word and letter.upper() not in self.secret_word:
+                wrong_txt += letter
+                wrong_txt += "  "
+
+        guess_bars = self.font.render(wrong_txt, False, (0, 0, 0), (173, 216, 230))
+        self.screen.blit(guess_bars, (30, 570))
+
+        # the hangman
+        self.screen.blit(self.wood, (5, 70))
+
+        # draw the man if the user was wrong
+        if self.wrong_guesses > 0:
+            self.screen.blit(self.head, (173, 198))
+        if self.wrong_guesses > 1:
+            self.screen.blit(self.body, (185, 261))
+        if self.wrong_guesses > 2:
+            self.screen.blit(self.hand_left, (164, 267))
+        if self.wrong_guesses > 3:
+            self.screen.blit(self.hand_right, (211, 267))
+        if self.wrong_guesses > 4:
+            self.screen.blit(self.leg_left, (175, 346))
+        if self.wrong_guesses > 5:
+            self.screen.blit(self.leg_right, (207, 346))
+
+        pygame.display.update()
+        return
 
     def __str__(self):
         return "This is class for " + self.name
