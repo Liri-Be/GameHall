@@ -32,7 +32,6 @@ class Game:
         curr_round = 0
         while self.stat['wins'] != self.rounds:
             self.drawBoard()
-            sleep(1)
             start = time()
             won, turns, tie = self.playOneRound()
             self.resetAll()
