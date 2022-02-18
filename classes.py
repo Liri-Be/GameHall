@@ -191,6 +191,7 @@ class Game:
         stat_msg = pygame.font.SysFont("arial bold", 60).render("Round ended!", False, (0, 0, 0), self.bg_color)
         self.screen.blit(stat_msg, (210, 20))
 
+        # win msg
         if won and not tie:
             msg_win = "You won! Congratulations!"
             msg_win_color = (50, 190, 60)
@@ -202,14 +203,17 @@ class Game:
         else:
             msg_win = "Computer won! Try again."
             msg_win_color = (255, 37, 37)
-            prefix = 10
+            prefix = 11
         stat_msg = pygame.font.SysFont("arial bold", 60).render(msg_win, False, msg_win_color, self.bg_color)
-        self.screen.blit(stat_msg, (80 + prefix, 65))
+        self.screen.blit(stat_msg, (32 + prefix, 65))
 
+        # the stats
         for i in range(len(msg.split('\n')) - 1):
-            stat_msg = pygame.font.SysFont("arial", 40).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
+            stat_msg = pygame.font.SysFont("arial", 38).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
             k = 10 if i == 0 else 50
-            self.screen.blit(stat_msg, (k, i * 50 + 150))
+            self.screen.blit(stat_msg, (k, i * 50 + 132))
+
+        self.screen.blit(self.font.render("Press the mouse to continue", False, (0, 0, 0), self.bg_color), (112, 550))
         pygame.display.flip()  # display the msg
 
         while True:  # present until pressed mouse
@@ -249,12 +253,17 @@ class Game:
         self.screen.fill(self.bg_color)
         pygame.display.update()
         sleep(0.5)
+
+        # the stats
         stat_msg = pygame.font.SysFont("arial bold", 60).render("Game ended!", False, (0, 0, 0), self.bg_color)
         self.screen.blit(stat_msg, (210, 20))
+
         for i in range(len(msg.split('\n')) - 1):
-            stat_msg = pygame.font.SysFont("arial", 40).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
+            stat_msg = pygame.font.SysFont("arial", 38).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
             k = 10 if i == 0 else 50
-            self.screen.blit(stat_msg, (k, i * 50 + 95))
+            self.screen.blit(stat_msg, (k, i * 50 + 85))
+
+        self.screen.blit(self.font.render("Press the mouse to continue", False, (0, 0, 0), self.bg_color), (112, 550))
         pygame.display.flip()  # display the msg
 
         while True:  # present until pressed mouse
@@ -679,7 +688,7 @@ class Hangman(Game):
         self.list_words.remove(self.secret_word)
         self.drawWord()
         self.drawWrong()
-        # print(self.list_words, self.secret_word, self.user_guess, self.correct_guesses)
+        print(self.secret_word)
 
         # start the game
         while True:
@@ -720,9 +729,19 @@ class Hangman(Game):
                 # check if won
                 win, who = self.checkWin()
                 if win and who == "user":
+                    feedback_rect = pygame.Rect(320, 350, 380, 120)
+                    pygame.draw.rect(self.screen, self.bg_color, feedback_rect)
+                    self.screen.blit(self.font.render("The word was " + self.secret_word,
+                                                      False, (0, 0, 0), self.bg_color), (330, 350))
+                    pygame.display.flip()
                     sleep(0.75)
                     return True, len(self.user_guess), False
                 elif win:
+                    feedback_rect = pygame.Rect(320, 350, 380, 120)
+                    pygame.draw.rect(self.screen, self.bg_color, feedback_rect)
+                    self.screen.blit(self.font.render("The word was " + self.secret_word,
+                                                      False, (0, 0, 0), self.bg_color), (330, 350))
+                    pygame.display.flip()
                     sleep(0.75)
                     return False, len(self.user_guess), False
 
@@ -839,6 +858,138 @@ class Hangman(Game):
         self.correct_guesses = 0
         self.secret_word = ""
         return
+
+    def statistics_round(self, won, turns, round_time, choosing, curr_round, tie):
+        """
+        calculate and present the statistics of each round of the game
+        :param won: whether the user won the round
+        :type won: bool
+        :param turns: number of turns this round took
+        :type turns: int
+        :param round_time: the time the round took
+        :type round_time: float
+        :param choosing: the average time it took the user to choose an action
+        :type choosing: float
+        :param curr_round: number of the current round
+        :type curr_round: int
+        :param tie: whether the round ended with a tie
+        :type tie: bool
+        :return: the msg of the statistics, string
+        """
+        self.stat['time'].append(round_time)  # save time
+        self.stat['turns'].append(turns)  # save turns
+        self.stat['choosing'].append(choosing)
+        if won:
+            self.stat['wins'] += 1  # remember wins of user
+        if tie:
+            self.stat['ties'] += 1  # remember ties
+
+        avg_wins = self.stat['wins'] / curr_round  # calc avg wins per round
+        avg_turns = sum(self.stat['turns']) / curr_round  # calc avg turns per round
+
+        # make msg after one round
+        msg = "Here are the round statistics:\n"
+        msg += "You guessed right: " + str(self.stat['wins']) + " times\n"
+        msg += "You guessed wrong: " + str(curr_round - self.stat['ties'] - self.stat['wins']) + " times\n"
+        msg += "Amount of guesses for this round: " + str(turns) + "\n"
+        msg += "This round took you " + str(format(self.stat['time'][curr_round - 1], '.3f')) + " seconds\n"
+        # msg += "You chose where to place the token in " + str(format(self.stat['choosing'][curr_round - 1], '.3f'))
+        # msg += " seconds in average\n"
+        msg += "Average amount of guesses per round: " + str(format(avg_turns, '.3f')) + "\n"
+        msg += "Average amount of wins per round: " + str(format(avg_wins, '.3f')) + "\n\n"
+
+        # present statistics
+        self.screen.fill(self.bg_color)
+        pygame.display.update()
+        sleep(0.5)
+        stat_msg = pygame.font.SysFont("arial bold", 60).render("Round ended!", False, (0, 0, 0), self.bg_color)
+        self.screen.blit(stat_msg, (210, 20))
+
+        # win msg
+        if won:
+            msg_win = "You are right! Congratulations!"
+            msg_win_color = (50, 190, 60)
+            prefix = 0
+
+        else:
+            msg_win = "You guessed wrong! Try again."
+            msg_win_color = (255, 37, 37)
+            prefix = 11
+        stat_msg = pygame.font.SysFont("arial bold", 60).render(msg_win, False, msg_win_color, self.bg_color)
+        self.screen.blit(stat_msg, (32 + prefix, 65))
+
+        # the stats
+        for i in range(len(msg.split('\n')) - 1):
+            stat_msg = pygame.font.SysFont("arial", 38).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
+            k = 10 if i == 0 else 50
+            self.screen.blit(stat_msg, (k, i * 50 + 132))
+
+        self.screen.blit(self.font.render("Press the mouse to continue", False, (0, 0, 0), self.bg_color), (112, 550))
+        pygame.display.flip()  # display the msg
+
+        while True:  # present until pressed mouse
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    break
+            else:
+                continue
+            break
+        print(msg)
+        return msg
+
+    def statistics_game(self, rounds):
+        """
+        calculate and present the statistics of the whole game
+        :param rounds: number of rounds the game took
+        :type rounds: int
+        :return: the msg of the statistics, string
+        """
+        avg_wins = self.stat['wins'] / rounds  # calc avg wins per round
+        avg_turns = sum(self.stat['turns']) / rounds  # calc avg turns per round
+        avg_time = sum(self.stat['time']) / rounds  # calc avg time per round
+        msg = "Here are the game statistics:\n"
+        msg += "You guessed right: " + str(self.stat['wins']) + " times\n"
+        msg += "You guessed wrong: " + str(rounds - self.stat['wins']) + " times\n"
+        msg += "Average amount of time per round: " + str(format(avg_time, '.3f')) + "s\n"
+        # msg += "You choose where to place the token in " + str(format(self.stat['choosing'][rounds - 1], '.3f'))
+        # msg += " seconds in average\n"
+        msg += "Average amount of guesses per round: " + str(format(avg_turns, '.3f')) + "\n"
+        msg += "Average amount of wins per round: " + str(format(avg_wins, '.3f')) + "\n\n"
+
+        # present statistics
+        self.screen.fill(self.bg_color)
+        pygame.display.update()
+        sleep(0.5)
+
+        # the stats
+        stat_msg = pygame.font.SysFont("arial bold", 60).render("Game ended!", False, (0, 0, 0), self.bg_color)
+        self.screen.blit(stat_msg, (210, 20))
+
+        for i in range(len(msg.split('\n')) - 1):
+            stat_msg = pygame.font.SysFont("arial", 38).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
+            k = 10 if i == 0 else 50
+            self.screen.blit(stat_msg, (k, i * 50 + 85))
+
+        self.screen.blit(self.font.render("Press the mouse to continue", False, (0, 0, 0), self.bg_color), (112, 550))
+        pygame.display.flip()  # display the msg
+
+        while True:  # present until pressed mouse
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    break
+            else:
+                continue
+            break
+        print(msg)
+        return msg
 
     def __str__(self):
         return "This is class for " + self.name
