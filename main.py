@@ -64,7 +64,7 @@ def main():
     pygame.display.update()
 
     # play background music
-    # pygame.mixer.Sound(r'music\bg_music.mp3').play(-1)
+    pygame.mixer.Sound(r'music\bg_music.mp3').play(-1)
 
     # start the app
     running = True
