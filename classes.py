@@ -34,8 +34,8 @@ class Game:
             self.drawBoard()
             start = time()
             won, turns, tie = self.playOneRound()
-            self.resetAll()
             finish = time()
+            self.resetAll()
             curr_round += 1
             self.statistics_round(won, turns, finish - start, 0, curr_round, tie)
 
