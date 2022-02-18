@@ -655,10 +655,10 @@ class TicTacToe(Game):
 class Hangman(Game):
     def __init__(self, screen):
         super().__init__("Hangman", screen)
-        self.list_words = ["Instagram"]
-        self.secret_word = "Game"
-        self.user_guess = ["f", "a", "g"]
-        self.wrong_guesses = 1
+        self.list_words = open(r'extras\Hangman\words.txt', 'r').read().split('\n')
+        self.secret_word = ""
+        self.user_guess = []
+        self.wrong_guesses = 0
         self.wood = pygame.image.load(r'photos\Hangman\wood.png')
         self.head = pygame.image.load(r'photos\Hangman\head.png')
         self.body = pygame.image.load(r'photos\Hangman\body.png')
@@ -668,15 +668,24 @@ class Hangman(Game):
         self.leg_right = pygame.image.load(r'photos\Hangman\leg-r.png')
 
     def playOneRound(self):
-        # todo: get date from user
-        # todo: check if valid
-        # todo: check if right or wrong
-        # todo: present on screen
-        # todo: present a win/lose
+        self.secret_word = random.choice(self.list_words)
         self.drawWord()
         self.drawWrong()
-        sleep(2)
-        return True, 0, False
+        print(self.list_words, self.secret_word)
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    return True, 0, False
+                elif event.type == pygame.KEYDOWN:
+                    pass
+                    # todo: get date from user
+                    # todo: check if valid
+                    # todo: check if right or wrong
+                    # todo: present on screen
+                    # todo: present a win/lose
 
     def checkWin(self):
         pass
