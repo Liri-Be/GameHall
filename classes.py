@@ -21,6 +21,7 @@ class Game:
         self.curr_player = 0
         self.screen = screen  # pygame screen
         self.screen_size = 700
+        self.bg_color = (173, 216, 230)
         self.font = pygame.font.SysFont("arial bold", 50)  # font for pygame
         self.stat = {'wins': 0, 'ties': 0, 'turns': [], 'time': [], 'choosing': []}
 
@@ -88,7 +89,7 @@ class Game:
 
                 elif event.type == pygame.KEYDOWN:  # if typing record the input if valid
                     error_rect = pygame.Rect(0, 470, 700, 300)
-                    pygame.draw.rect(self.screen, (153, 217, 234), error_rect)
+                    pygame.draw.rect(self.screen, self.bg_color, error_rect)
                     pygame.display.flip()
 
                     if event.key == pygame.K_BACKSPACE:  # backspace - delete the last one
@@ -119,22 +120,22 @@ class Game:
 
             if empty:  # try to enter empty amount
                 error_msg = self.font.render("Not valid, enter at least one number.",
-                                             False, (255, 0, 0), (153, 217, 234))
+                                             False, (255, 0, 0), self.bg_color)
                 self.screen.blit(error_msg, (52, 475))
 
             elif zero and digit:  # if it is zero
-                error_msg = self.font.render("Not valid, number of rounds", False, (255, 0, 0), (153, 217, 234))
+                error_msg = self.font.render("Not valid, number of rounds", False, (255, 0, 0), self.bg_color)
                 self.screen.blit(error_msg, (127, 475))
-                error_msg = self.font.render("should be bigger than 0.", False, (255, 0, 0), (153, 217, 234))
+                error_msg = self.font.render("should be bigger than 0.", False, (255, 0, 0), self.bg_color)
                 self.screen.blit(error_msg, (150, 515))
 
             elif not digit:  # if we got not digit
-                error_msg = self.font.render("Not valid, only numbers.", False, (255, 0, 0), (153, 217, 234))
+                error_msg = self.font.render("Not valid, only numbers.", False, (255, 0, 0), self.bg_color)
                 self.screen.blit(error_msg, (150, 475))
 
             else:  # delete the error msg if we have valid input
                 error_rect = pygame.Rect(0, 470, 700, 300)
-                pygame.draw.rect(self.screen, (153, 217, 234), error_rect)
+                pygame.draw.rect(self.screen, self.bg_color, error_rect)
 
             # present the input on the screen
             user_txt = self.font.render(user_input, False, (0, 0, 0), (34, 177, 36))
@@ -184,10 +185,10 @@ class Game:
         msg += "Average amount of wins per round: " + str(format(avg_wins, '.3f')) + "\n\n"
 
         # present statistics
-        self.screen.fill((173, 216, 230))
+        self.screen.fill(self.bg_color)
         pygame.display.update()
         sleep(0.5)
-        stat_msg = pygame.font.SysFont("arial bold", 60).render("Round ended!", False, (0, 0, 0), (173, 216, 230))
+        stat_msg = pygame.font.SysFont("arial bold", 60).render("Round ended!", False, (0, 0, 0), self.bg_color)
         self.screen.blit(stat_msg, (210, 20))
 
         if won and not tie:
@@ -202,11 +203,11 @@ class Game:
             msg_win = "Computer won! Try again."
             msg_win_color = (255, 37, 37)
             prefix = 10
-        stat_msg = pygame.font.SysFont("arial bold", 60).render(msg_win, False, msg_win_color, (173, 216, 230))
+        stat_msg = pygame.font.SysFont("arial bold", 60).render(msg_win, False, msg_win_color, self.bg_color)
         self.screen.blit(stat_msg, (80 + prefix, 65))
 
         for i in range(len(msg.split('\n')) - 1):
-            stat_msg = pygame.font.SysFont("arial", 40).render(msg.split('\n')[i], False, (0, 0, 0), (173, 216, 230))
+            stat_msg = pygame.font.SysFont("arial", 40).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
             k = 10 if i == 0 else 50
             self.screen.blit(stat_msg, (k, i * 50 + 150))
         pygame.display.flip()  # display the msg
@@ -245,13 +246,13 @@ class Game:
         msg += "Average amount of wins per round: " + str(format(avg_wins, '.3f')) + "\n\n"
 
         # present statistics
-        self.screen.fill((173, 216, 230))
+        self.screen.fill(self.bg_color)
         pygame.display.update()
         sleep(0.5)
-        stat_msg = pygame.font.SysFont("arial bold", 60).render("Game ended!", False, (0, 0, 0), (173, 216, 230))
+        stat_msg = pygame.font.SysFont("arial bold", 60).render("Game ended!", False, (0, 0, 0), self.bg_color)
         self.screen.blit(stat_msg, (210, 20))
         for i in range(len(msg.split('\n')) - 1):
-            stat_msg = pygame.font.SysFont("arial", 40).render(msg.split('\n')[i], False, (0, 0, 0), (173, 216, 230))
+            stat_msg = pygame.font.SysFont("arial", 40).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
             k = 10 if i == 0 else 50
             self.screen.blit(stat_msg, (k, i * 50 + 95))
         pygame.display.flip()  # display the msg
@@ -657,7 +658,8 @@ class Hangman(Game):
         super().__init__("Hangman", screen)
         self.list_words = open(r'extras\Hangman\words.txt', 'r').read().split('\n')
         self.secret_word = ""
-        self.user_guess = []
+        self.user_guess = set()
+        self.correct_guesses = 0
         self.wrong_guesses = 0
         self.wood = pygame.image.load(r'photos\Hangman\wood.png')
         self.head = pygame.image.load(r'photos\Hangman\head.png')
@@ -668,32 +670,82 @@ class Hangman(Game):
         self.leg_right = pygame.image.load(r'photos\Hangman\leg-r.png')
 
     def playOneRound(self):
+        """
+        play one round of the game
+        :return: if there was a win, how many guesses
+        """
+        # initialize the game
         self.secret_word = random.choice(self.list_words)
+        self.list_words.remove(self.secret_word)
         self.drawWord()
         self.drawWrong()
-        print(self.list_words, self.secret_word)
+        # print(self.list_words, self.secret_word, self.user_guess, self.correct_guesses)
+
+        # start the game
         while True:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT:  # leave
                     pygame.quit()
                     sys.exit()
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    return True, 0, False
-                elif event.type == pygame.KEYDOWN:
-                    pass
-                    # todo: get date from user
-                    # todo: check if valid
-                    # todo: check if right or wrong
-                    # todo: present on screen
-                    # todo: present a win/lose
+
+                elif event.type == pygame.KEYDOWN:  # pressed a key
+                    feedback_rect = pygame.Rect(320, 350, 380, 120)
+                    pygame.draw.rect(self.screen, self.bg_color, feedback_rect)
+                    pygame.display.flip()
+
+                    # generate feedback msg
+                    if self.isValidLetter(event.unicode):
+                        if event.unicode in self.user_guess:  # already guessed
+                            feedback_msg = self.font.render("Already tried that", False, (0, 0, 0), self.bg_color)
+
+                        elif event.unicode in self.secret_word:  # correct guess
+                            feedback_msg = self.font.render("Nice!", False, (0, 0, 0), self.bg_color)
+                            self.correct_guesses += 1
+
+                        else:  # false guess
+                            feedback_msg = self.font.render("Try again!", False, (0, 0, 0), self.bg_color)
+                            self.wrong_guesses += 1
+
+                        self.user_guess.add(event.unicode.lower())
+                    else:
+                        feedback_msg = self.font.render("Only letters", False, (0, 0, 0), self.bg_color)
+                    self.screen.blit(feedback_msg, (330, 350))
+
+                # update board
+                self.drawWord()
+                self.drawWrong()
+                self.drawHangman()
+                pygame.display.update()
+
+                # check if won
+                win, who = self.checkWin()
+                if win and who == "user":
+                    sleep(0.75)
+                    return True, len(self.user_guess), False
+                elif win:
+                    sleep(0.75)
+                    return False, len(self.user_guess), False
 
     def checkWin(self):
-        pass
+        """
+        check if the user won or the computer (which mean the user lost)
+        :return: True if there was a win (to the user/computer) or False if no one won, and string with whom won
+        """
+        secret_letters = set()  # in set to avoid double letters
+        for letter in self.secret_word:
+            secret_letters.add(letter)
+
+        if self.wrong_guesses == 6:
+            return True, "computer"
+        elif self.correct_guesses == len(secret_letters):
+            return True, "user"
+        return False, "no one"
 
     def checkTie(self):
         pass
 
-    def isValidLetter(self, letter):
+    @staticmethod
+    def isValidLetter(letter):
         """
         check if the letter the user entered is valid (a letter in english)
         :param letter: the letter the user entered
@@ -701,9 +753,7 @@ class Hangman(Game):
         :return: True or False
         """
         if not letter.isalpha():
-            print("only letters")
             return False
-        self.user_guess.append(letter.lower())
         return True
 
     def drawBoard(self):
@@ -712,30 +762,15 @@ class Hangman(Game):
         :return: None
         """
         # draw the screen
-        self.screen.fill((173, 216, 230))
+        self.screen.fill(self.bg_color)
 
         # headings
         self.screen.blit(pygame.font.SysFont("arial bold", 80).render("Try to guess!",
-                                                                      False, (0, 0, 0), (173, 216, 230)), (315, 100))
-        self.screen.blit(self.font.render("Type the letters", False, (0, 0, 0), (173, 216, 230)), (320, 165))
+                                                                      False, (0, 0, 0), self.bg_color), (315, 100))
+        self.screen.blit(self.font.render("Type the letters", False, (0, 0, 0), self.bg_color), (320, 165))
 
         # the hangman
         self.screen.blit(self.wood, (5, 70))
-
-        # draw the man if the user was wrong
-        if self.wrong_guesses > 0:
-            self.screen.blit(self.head, (173, 198))
-        if self.wrong_guesses > 1:
-            self.screen.blit(self.body, (185, 261))
-        if self.wrong_guesses > 2:
-            self.screen.blit(self.hand_left, (164, 267))
-        if self.wrong_guesses > 3:
-            self.screen.blit(self.hand_right, (211, 267))
-        if self.wrong_guesses > 4:
-            self.screen.blit(self.leg_left, (175, 346))
-        if self.wrong_guesses > 5:
-            self.screen.blit(self.leg_right, (207, 346))
-
         pygame.display.update()
         return
 
@@ -753,7 +788,7 @@ class Hangman(Game):
                 guess_bars_txt += "_"
             guess_bars_txt += "  "
 
-        guess_bars = pygame.font.SysFont("arial bold", 80).render(guess_bars_txt, False, (0, 0, 0), (173, 216, 230))
+        guess_bars = pygame.font.SysFont("arial bold", 80).render(guess_bars_txt, False, (0, 0, 0), self.bg_color)
         self.screen.blit(guess_bars, (330, 280))
         pygame.display.update()
 
@@ -763,15 +798,46 @@ class Hangman(Game):
         :return: None
         """
         # wrong guesses
-        self.screen.blit(self.font.render("Wrong guesses:", False, (0, 0, 0), (173, 216, 230)), (30, 515))
+        self.screen.blit(self.font.render("Wrong guesses:", False, (0, 0, 0), self.bg_color), (30, 515))
         wrong_txt = ""
         for letter in self.user_guess:
             if letter not in self.secret_word and letter.upper() not in self.secret_word:
                 wrong_txt += letter
                 wrong_txt += "  "
 
-        self.screen.blit(self.font.render(wrong_txt, False, (0, 0, 0), (173, 216, 230)), (30, 570))
+        self.screen.blit(self.font.render(wrong_txt, False, (0, 0, 0), self.bg_color), (30, 570))
         pygame.display.update()
+        return
+
+    def drawHangman(self):
+        """
+        draw the hangman according to the number of mistakes
+        :return: None
+        """
+        # draw the man if the user was wrong
+        if self.wrong_guesses > 0:
+            self.screen.blit(self.head, (173, 198))
+        if self.wrong_guesses > 1:
+            self.screen.blit(self.body, (185, 261))
+        if self.wrong_guesses > 2:
+            self.screen.blit(self.hand_left, (164, 267))
+        if self.wrong_guesses > 3:
+            self.screen.blit(self.hand_right, (211, 267))
+        if self.wrong_guesses > 4:
+            self.screen.blit(self.leg_left, (175, 346))
+        if self.wrong_guesses > 5:
+            self.screen.blit(self.leg_right, (207, 346))
+        return
+
+    def resetAll(self):
+        """
+        reset all the data
+        :return: None
+        """
+        self.user_guess = set()
+        self.wrong_guesses = 0
+        self.correct_guesses = 0
+        self.secret_word = ""
         return
 
     def __str__(self):
