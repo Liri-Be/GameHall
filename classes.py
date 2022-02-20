@@ -18,7 +18,7 @@ class Game:
         """
         self.name = name
         self.rounds = 0  # number of rounds for a win
-        self.curr_player = 0
+        self.points = 0
         self.screen = screen  # pygame screen
         self.screen_size = 700
         self.bg_color = (173, 216, 230)
@@ -199,19 +199,24 @@ class Game:
         elif tie:
             msg_win = "It is a tie! Try again."
             msg_win_color = (225, 211, 12)
-            prefix = 80
+            prefix = 83
         else:
             msg_win = "Computer won! Try again."
             msg_win_color = (255, 37, 37)
-            prefix = 11
+            prefix = 15
         stat_msg = pygame.font.SysFont("arial bold", 60).render(msg_win, False, msg_win_color, self.bg_color)
-        self.screen.blit(stat_msg, (32 + prefix, 65))
+        self.screen.blit(stat_msg, (70 + prefix, 65))
+
+        # points msg
+        point_msg = pygame.font.SysFont("arial bold", 50).render("You've got {0} points!".format(self.points),
+                                                                 False, (0, 0, 0), self.bg_color)
+        self.screen.blit(point_msg, (185, 115))
 
         # the stats
         for i in range(len(msg.split('\n')) - 1):
             stat_msg = pygame.font.SysFont("arial", 38).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
             k = 10 if i == 0 else 50
-            self.screen.blit(stat_msg, (k, i * 50 + 132))
+            self.screen.blit(stat_msg, (k, i * 50 + 172))
 
         self.screen.blit(self.font.render("Press the mouse to continue", False, (0, 0, 0), self.bg_color), (112, 550))
         pygame.display.flip()  # display the msg
@@ -258,10 +263,16 @@ class Game:
         stat_msg = pygame.font.SysFont("arial bold", 60).render("Game ended!", False, (0, 0, 0), self.bg_color)
         self.screen.blit(stat_msg, (210, 20))
 
+        # points msg
+        point_msg = pygame.font.SysFont("arial bold", 50).render("You've got {0} points!".format(self.points),
+                                                                 False, (0, 0, 0), self.bg_color)
+        self.screen.blit(point_msg, (185, 70))
+
+        # stat msg
         for i in range(len(msg.split('\n')) - 1):
             stat_msg = pygame.font.SysFont("arial", 38).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
             k = 10 if i == 0 else 50
-            self.screen.blit(stat_msg, (k, i * 50 + 85))
+            self.screen.blit(stat_msg, (k, i * 50 + 127))
 
         self.screen.blit(self.font.render("Press the mouse to continue", False, (0, 0, 0), self.bg_color), (112, 550))
         pygame.display.flip()  # display the msg
@@ -279,6 +290,12 @@ class Game:
             break
         print(msg)
         return msg
+
+    def saveRecord(self):
+        pass
+
+    def presentRecordTable(self):
+        pass
 
     def __str__(self):
         return "This is base class for the games"
@@ -320,6 +337,8 @@ class FourInARow(Game):
                         tie = self.checkTie()
                         if "won" in win_msg:  # check for a win
                             sleep(0.75)
+                            if "You" in win_msg:
+                                self.points += 1
                             return True if "You" in win_msg else False, turn, False
                         elif tie:
                             sleep(0.75)
@@ -508,6 +527,8 @@ class TicTacToe(Game):
                         tie = self.checkTie()
                         if "won" in msg_win:
                             sleep(0.75)
+                            if "You" in msg_win:
+                                self.points += 1
                             return True if "You" in msg_win else False, turn, False
                         elif tie:
                             sleep(0.75)
@@ -735,6 +756,7 @@ class Hangman(Game):
                                                       False, (0, 0, 0), self.bg_color), (330, 350))
                     pygame.display.flip()
                     sleep(0.75)
+                    self.points += 6 - self.wrong_guesses
                     return True, len(self.user_guess), False
                 elif win:
                     feedback_rect = pygame.Rect(320, 350, 380, 120)
@@ -918,11 +940,16 @@ class Hangman(Game):
         stat_msg = pygame.font.SysFont("arial bold", 60).render(msg_win, False, msg_win_color, self.bg_color)
         self.screen.blit(stat_msg, (32 + prefix, 65))
 
+        # points msg
+        point_msg = pygame.font.SysFont("arial bold", 50).render("You've got {0} points!".format(self.points),
+                                                                 False, (0, 0, 0), self.bg_color)
+        self.screen.blit(point_msg, (185, 115))
+
         # the stats
         for i in range(len(msg.split('\n')) - 1):
             stat_msg = pygame.font.SysFont("arial", 38).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
             k = 10 if i == 0 else 50
-            self.screen.blit(stat_msg, (k, i * 50 + 132))
+            self.screen.blit(stat_msg, (k, i * 50 + 172))
 
         self.screen.blit(self.font.render("Press the mouse to continue", False, (0, 0, 0), self.bg_color), (112, 550))
         pygame.display.flip()  # display the msg
@@ -969,10 +996,16 @@ class Hangman(Game):
         stat_msg = pygame.font.SysFont("arial bold", 60).render("Game ended!", False, (0, 0, 0), self.bg_color)
         self.screen.blit(stat_msg, (210, 20))
 
+        # points msg
+        point_msg = pygame.font.SysFont("arial bold", 50).render("You've got {0} points!".format(self.points),
+                                                                 False, (0, 0, 0), self.bg_color)
+        self.screen.blit(point_msg, (185, 70))
+
+        # stat msg
         for i in range(len(msg.split('\n')) - 1):
             stat_msg = pygame.font.SysFont("arial", 38).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
             k = 10 if i == 0 else 50
-            self.screen.blit(stat_msg, (k, i * 50 + 85))
+            self.screen.blit(stat_msg, (k, i * 50 + 127))
 
         self.screen.blit(self.font.render("Press the mouse to continue", False, (0, 0, 0), self.bg_color), (112, 550))
         pygame.display.flip()  # display the msg
