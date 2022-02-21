@@ -44,6 +44,7 @@ tooth
 heart
 beach
 shark
+peace
 zombie
 ladder
 guitar

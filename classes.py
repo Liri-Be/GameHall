@@ -3,6 +3,8 @@ import random
 import sys
 from time import time, sleep
 import pygame
+from openpyxl import load_workbook
+import pandas
 
 pygame.font.init()
 
@@ -24,6 +26,7 @@ class Game:
         self.bg_color = (173, 216, 230)
         self.font = pygame.font.SysFont("arial bold", 50)  # font for pygame
         self.stat = {'wins': 0, 'ties': 0, 'turns': [], 'time': [], 'choosing': []}
+        self.lead_board_path = r'extras\{0}\lead_board.xlsx'.format(name)
 
     def playGame(self):
         """
@@ -31,7 +34,8 @@ class Game:
         :return: None
         """
         curr_round = 0
-        while self.stat['wins'] != self.rounds:
+        # while self.stat['wins'] != self.rounds:
+        for _ in range(5):  # play 5 rounds
             self.drawBoard()
             start = time()
             won, turns, tie = self.playOneRound()
@@ -247,7 +251,7 @@ class Game:
         avg_time = sum(self.stat['time']) / rounds  # calc avg time per round
         msg = "Here are the game statistics:\n"
         msg += "You won: " + str(self.stat['wins']) + " times\n"
-        msg += "The Computer won: " + str(rounds - self.stat['wins']) + " times\n"
+        msg += "The Computer won: " + str(rounds - self.stat['ties'] - self.stat['wins']) + " times\n"
         msg += "Average amount of time per round: " + str(format(avg_time, '.3f')) + "s\n"
         # msg += "You choose where to place the token in " + str(format(self.stat['choosing'][rounds - 1], '.3f'))
         # msg += " seconds in average\n"
@@ -292,10 +296,194 @@ class Game:
         return msg
 
     def saveRecord(self):
-        pass
+        """
+        taking the nickname of the user from the user and checking if it's a valid name
+        :return: the nickname of the user, str
+        """
+        # ask if the user want to be in the lead board
+        # present background
+        rnd_screen = pygame.image.load(r'photos\General\save_record.png')
+        self.screen.blit(rnd_screen, (0, 0))
+        pygame.display.update()
+
+        # wait for input from user
+        choose = False
+        want_lead = False  # want to be in the lead board or not
+
+        while not choose:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:  # leave
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:  # user pressed mouse
+                    x_pos, y_pos = pygame.mouse.get_pos()
+                    if 100 < x_pos < 500:  # in the x-range
+                        if 327 < y_pos < 457:  # yes
+                            print("Yes")
+                            want_lead = True
+                            choose = True
+
+                        elif 457 < y_pos < 617:  # no
+                            want_lead = False
+                            choose = True
+
+        if want_lead:  # want to save
+            # start to save the name
+            # present background
+            rnd_screen = pygame.image.load(r'photos\General\ask_name.png')
+            self.screen.blit(rnd_screen, (0, 0))
+            pygame.display.update()
+
+            # present input text rectangle
+            input_rect = pygame.Rect(200, 375, 300, 65)
+            pygame.draw.rect(self.screen, (34, 177, 36), input_rect)
+
+            # variables for input
+            done_to_enter = False
+            user_input = ""
+            digit = True
+            empty = False
+
+            # get the input
+            while not done_to_enter:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:  # if press exit - leave
+                        pygame.quit()
+                        sys.exit()
+
+                    elif event.type == pygame.KEYDOWN:  # if typing record the input if valid
+                        error_rect = pygame.Rect(0, 470, 700, 300)
+                        pygame.draw.rect(self.screen, self.bg_color, error_rect)
+                        pygame.display.flip()
+
+                        if event.key == pygame.K_BACKSPACE:  # backspace - delete the last one
+                            user_input = user_input[:-1]
+                            pygame.draw.rect(self.screen, (34, 177, 36), input_rect)
+                            user_txt = self.font.render(user_input, False, (0, 0, 0), (34, 177, 36))
+                            self.screen.blit(user_txt, (200, 375))
+                            pygame.display.flip()
+
+                        elif event.key == pygame.K_RETURN:  # pressed enter
+                            if user_input == "":
+                                empty = True
+                            else:
+                                done_to_enter = True
+
+                        else:  # pressed other key
+                            empty = False
+                            if event.unicode.isalpha():  # if it is a letter
+                                digit = True
+                                user_input += event.unicode
+                            else:  # not a letter
+                                digit = False
+
+                if empty:  # try to enter empty amount
+                    error_msg = self.font.render("Not valid, enter at least one letter.",
+                                                 False, (255, 0, 0), self.bg_color)
+                    self.screen.blit(error_msg, (52, 475))
+
+                elif not digit:  # if we got not digit
+                    error_msg = self.font.render("Not valid, only letters.", False, (255, 0, 0), self.bg_color)
+                    self.screen.blit(error_msg, (150, 475))
+
+                else:  # delete the error msg if we have valid input
+                    error_rect = pygame.Rect(0, 470, 700, 300)
+                    pygame.draw.rect(self.screen, self.bg_color, error_rect)
+
+                # present the input on the screen
+                user_txt = self.font.render(user_input, False, (0, 0, 0), (34, 177, 36))
+                self.screen.blit(user_txt, (200, 375))
+                pygame.display.flip()
+
+            return user_input
+        return None  # does not want to save
 
     def presentRecordTable(self):
-        pass
+        """
+        present the lead board on screen - top 5,
+        save the name of the user if they want to be saved and the user place in the lead board
+        :return: None
+        """
+        # save the name and sort
+        name = self.saveRecord()
+        if name is not None:  # if the user want to be saved - save its data
+            # open the Excel
+            workbook = load_workbook(filename=self.lead_board_path)
+            sheet = workbook['Sheet']
+            # check if already in the lead board
+            exist = False
+            row = 1
+            names = sheet['A']
+            for i in range(1, len(names)):
+                if names[i].value == name:
+                    exist = True
+                    row = i + 1
+                    break
+
+            # write new data to our excel
+            if exist:
+                sheet["B{0}".format(row)].value = self.points
+                sheet["C{0}".format(row)].value = sum(self.stat['time'])
+            else:
+                new_data = [name, self.points, sum(self.stat['time'])]
+                print(new_data)
+                sheet.append(new_data)
+            workbook.save(filename=self.lead_board_path)
+
+        # sort by points and time
+        workbook = pandas.read_excel(self.lead_board_path)
+        workbook = workbook.sort_values(["Points", "Time(s)"], ascending=[False, True])
+        workbook.to_excel(r'extras\{0}\lead_sorted.xlsx'.format(self.name), sheet_name="Sheet")
+
+        # present the table
+        self.screen.fill(self.bg_color)
+        pygame.draw.line(self.screen, (0, 0, 0), (265, 120), (265, 570), 7)
+        pygame.draw.line(self.screen, (0, 0, 0), (435, 120), (435, 570), 7)
+        for i in range(5):
+            pygame.draw.line(self.screen, (0, 0, 0), (95, 195 + i*75), (605, 195 + i*75), 7)
+
+        # present the data
+        workbook = load_workbook(filename=r'extras\{0}\lead_sorted.xlsx'.format(self.name))
+        sheet = workbook['Sheet']
+        data = []
+        for i in range(1, min(sheet.max_row, 6) + 1):
+            row = []
+            for j in range(2, sheet.max_column + 1):
+                row.append(sheet.cell(row=i, column=j).value)
+            data.append(tuple(row))
+        print(data)
+        prefix_y = 0
+        for user_data in data:
+            name, points, user_time = user_data
+            points = str(points)
+            prefix_x_time = 0
+            try:
+                user_time = str(format(user_time, '.3f'))
+                prefix_x_time = 20
+            except ValueError:  # if it is the headline
+                pass
+            prefix_x_points = 45 if points.isdigit() else 0
+            self.screen.blit(self.font.render(name, False, (0, 0, 0), self.bg_color), (120, 145 + 75*prefix_y))
+            self.screen.blit(self.font.render(points, False, (0, 0, 0), self.bg_color),
+                             (295 + prefix_x_points, 145 + 75*prefix_y))
+            self.screen.blit(self.font.render(user_time, False, (0, 0, 0), self.bg_color),
+                             (460 + prefix_x_time, 145 + 75*prefix_y))
+            prefix_y += 1
+
+        # headlines
+        self.screen.blit(pygame.font.SysFont("ariel bold", 80).render("Lead board", False,
+                                                                      (0, 0, 0), self.bg_color), (200, 40))
+        self.screen.blit(self.font.render("Press the mouse to continue", False, (0, 0, 0), self.bg_color), (112, 600))
+
+        pygame.display.update()
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:  # leave
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:  # quit lead board
+                    return
 
     def __str__(self):
         return "This is base class for the games"
@@ -303,7 +491,7 @@ class Game:
 
 class FourInARow(Game):
     def __init__(self, screen):
-        super().__init__("Four In a Row", screen)
+        super().__init__("FourInARow", screen)
         self.cols = 7
         self.rows = 6
         self.game_board = [[0 * x * y for x in range(self.cols)] for y in range(self.rows)]
@@ -781,9 +969,6 @@ class Hangman(Game):
         elif self.correct_guesses == len(secret_letters):
             return True, "user"
         return False, "no one"
-
-    def checkTie(self):
-        pass
 
     @staticmethod
     def isValidLetter(letter):

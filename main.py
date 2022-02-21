@@ -2,6 +2,7 @@ from classes import FourInARow, TicTacToe, Hangman
 from time import sleep
 import pygame
 import sys
+import openpyxl
 
 INST_FOURINAROW = pygame.image.load(r'photos\FourInARow\fourinarow_instructions.png')
 INST_TICTACTOE = pygame.image.load(r'photos\FourInARow\fourinarow_instructions.png')
@@ -39,8 +40,9 @@ def playTheGame(screen, game_name):
 
     # start game
     screen.fill((0, 0, 0))
-    game.chooseAmountRounds()
+    # game.chooseAmountRounds() - play 5 rounds
     game.playGame()
+    game.presentRecordTable()
     return
 
 
@@ -65,6 +67,20 @@ def main():
 
     # play background music
     pygame.mixer.Sound(r'music\bg_music.mp3').play(-1)
+
+    # create execl(s) for lead boards
+    # create the lead board
+    game_names = ["FourInARow", "TicTacToe", "Hangman"]
+    for name in game_names:
+        try:  # check if exists
+            openpyxl.load_workbook(r'extras\{0}\lead_board.xlsx'.format(name))
+        except FileNotFoundError:  # if not exists
+            workbook = openpyxl.Workbook()
+            sheet = workbook.active
+            sheet['A1'].value = "Names"
+            sheet['B1'].value = "Points"
+            sheet['C1'].value = "Time(s)"
+            workbook.save(r'extras\{0}\lead_board.xlsx'.format(name))
 
     # start the app
     running = True
