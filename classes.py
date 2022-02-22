@@ -437,14 +437,15 @@ class Game:
 
         # present the table
         self.screen.fill(self.bg_color)
-        pygame.draw.line(self.screen, (0, 0, 0), (265, 120), (265, 570), 7)
-        pygame.draw.line(self.screen, (0, 0, 0), (435, 120), (435, 570), 7)
+        pygame.draw.line(self.screen, (0, 0, 0), (265, 145), (265, 595), 7)
+        pygame.draw.line(self.screen, (0, 0, 0), (435, 145), (435, 595), 7)
         for i in range(5):
-            pygame.draw.line(self.screen, (0, 0, 0), (95, 195 + i*75), (605, 195 + i*75), 7)
+            pygame.draw.line(self.screen, (0, 0, 0), (95, 220 + i*75), (605, 220 + i*75), 7)
 
         # present the data
         workbook = load_workbook(filename=r'extras\{0}\lead_sorted.xlsx'.format(self.name))
         sheet = workbook['Sheet']
+        # find top 5
         data = []
         for i in range(1, min(sheet.max_row, 6) + 1):
             row = []
@@ -452,31 +453,53 @@ class Game:
                 row.append(sheet.cell(row=i, column=j).value)
             data.append(tuple(row))
         print(data)
+        # put on screen
         prefix_y = 0
         for user_data in data:
-            name, points, user_time = user_data
-            points = str(points)
+            user_name, user_points, user_time = user_data
+            user_points = str(user_points)
             prefix_x_time = 0
-            try:
+            try:  # if it is the time present only 3 digits after the point
                 user_time = str(format(user_time, '.3f'))
-                prefix_x_time = 20
+                prefix_x_time = 20  # to place in the center
             except ValueError:  # if it is the headline
                 pass
-            prefix_x_points = 45 if points.isdigit() else 0
-            self.screen.blit(self.font.render(name, False, (0, 0, 0), self.bg_color), (120, 145 + 75*prefix_y))
-            self.screen.blit(self.font.render(points, False, (0, 0, 0), self.bg_color),
-                             (295 + prefix_x_points, 145 + 75*prefix_y))
+            prefix_x_points = 45 if user_points.isdigit() else 0  # to place in the center
+            self.screen.blit(self.font.render(user_name, False, (0, 0, 0), self.bg_color), (120, 170 + 75*prefix_y))
+            self.screen.blit(self.font.render(user_points, False, (0, 0, 0), self.bg_color),
+                             (295 + prefix_x_points, 170 + 75*prefix_y))
             self.screen.blit(self.font.render(user_time, False, (0, 0, 0), self.bg_color),
-                             (460 + prefix_x_time, 145 + 75*prefix_y))
-            prefix_y += 1
+                             (460 + prefix_x_time, 170 + 75*prefix_y))
+            prefix_y += 1  # to place in the current line
 
         # headlines
         self.screen.blit(pygame.font.SysFont("ariel bold", 80).render("Lead board", False,
-                                                                      (0, 0, 0), self.bg_color), (200, 40))
-        self.screen.blit(self.font.render("Press the mouse to continue", False, (0, 0, 0), self.bg_color), (112, 600))
+                                                                      (0, 0, 0), self.bg_color), (195, 30))
+        self.screen.blit(self.font.render("Press the mouse to continue", False, (0, 0, 0), self.bg_color), (112, 630))
+
+        # present the place in the lead board
+        print(name)
+        if name is None:
+            msg = "You are not on the lead board"
+            prefix = 0
+            color = (255, 37, 37)  # red
+        else:
+            row = 2
+            for i in range(2, sheet.max_row + 1):
+                if sheet.cell(row=i, column=2).value == name:
+                    row = i - 1
+            msg = "You are in the {0} place!".format(row)
+            if row < 6:  # in the top 5
+                color = (50, 190, 60)  # green
+            else:
+                color = (225, 211, 12)  # yellow
+            prefix = 52
+
+        self.screen.blit(self.font.render(msg, False, color, self.bg_color), (112 + prefix, 90))
 
         pygame.display.update()
 
+        # wait for the user to finish looking at the lead board
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # leave
@@ -812,14 +835,23 @@ class TicTacToe(Game):
         sleep(sleep_time)
 
         start_row = random.randrange(0, 3)
+        start_col = random.randrange(0, 3)
         for i in range(start_row, self.rows):
-            for j in range(self.cols):
+            for j in range(start_col, self.cols):
+                if self.game_board[i][j] == 0:  # has to happen, if not - tie should already occur
+                    self.game_board[i][j] = 1
+                    return
+            for j in range(start_col):
                 if self.game_board[i][j] == 0:  # has to happen, if not - tie should already occur
                     self.game_board[i][j] = 1
                     return
 
         for i in range(start_row):
-            for j in range(self.cols):
+            for j in range(start_col, self.cols):
+                if self.game_board[i][j] == 0:  # has to happen, if not - tie should already occur
+                    self.game_board[i][j] = 1
+                    return
+            for j in range(start_col):
                 if self.game_board[i][j] == 0:  # has to happen, if not - tie should already occur
                     self.game_board[i][j] = 1
                     return
