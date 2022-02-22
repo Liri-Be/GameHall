@@ -26,7 +26,7 @@ class Game:
         self.bg_color = (173, 216, 230)
         self.font = pygame.font.SysFont("arial bold", 50)  # font for pygame
         self.stat = {'wins': 0, 'ties': 0, 'turns': [], 'time': [], 'choosing': []}
-        self.lead_board_path = r'extras\{0}\lead_board.xlsx'.format(name)
+        self.lead_board_path = r'files\{0}\lead_board.xlsx'.format(name)
 
     def playGame(self):
         """
@@ -433,7 +433,7 @@ class Game:
         # sort by points and time
         workbook = pandas.read_excel(self.lead_board_path)
         workbook = workbook.sort_values(["Points", "Time(s)"], ascending=[False, True])
-        workbook.to_excel(r'extras\{0}\lead_sorted.xlsx'.format(self.name), sheet_name="Sheet")
+        workbook.to_excel(r'files\{0}\lead_sorted.xlsx'.format(self.name), sheet_name="Sheet")
 
         # present the table
         self.screen.fill(self.bg_color)
@@ -443,7 +443,7 @@ class Game:
             pygame.draw.line(self.screen, (0, 0, 0), (95, 220 + i*75), (605, 220 + i*75), 7)
 
         # present the data
-        workbook = load_workbook(filename=r'extras\{0}\lead_sorted.xlsx'.format(self.name))
+        workbook = load_workbook(filename=r'files\{0}\lead_sorted.xlsx'.format(self.name))
         sheet = workbook['Sheet']
         # find top 5
         data = []
@@ -906,7 +906,7 @@ class TicTacToe(Game):
 class Hangman(Game):
     def __init__(self, screen):
         super().__init__("Hangman", screen)
-        self.list_words = open(r'extras\Hangman\words.txt', 'r').read().split('\n')
+        self.list_words = open(r'files\Hangman\words.txt', 'r').read().split('\n')
         self.secret_word = ""
         self.user_guess = set()
         self.correct_guesses = 0

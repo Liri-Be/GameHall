@@ -5,8 +5,8 @@ import sys
 import openpyxl
 
 INST_FOURINAROW = pygame.image.load(r'photos\FourInARow\fourinarow_instructions.png')
-INST_TICTACTOE = pygame.image.load(r'photos\FourInARow\fourinarow_instructions.png')
-INST_HANGMAN = pygame.image.load(r'photos\FourInARow\fourinarow_instructions.png')
+INST_TICTACTOE = pygame.image.load(r'photos\TicTacToe\tictactoe_instructions.png')
+INST_HANGMAN = pygame.image.load(r'photos\Hangman\hangman_instructions.png')
 
 
 def playTheGame(screen, game_name):
@@ -73,14 +73,14 @@ def main():
     game_names = ["FourInARow", "TicTacToe", "Hangman"]
     for name in game_names:
         try:  # check if exists
-            openpyxl.load_workbook(r'extras\{0}\lead_board.xlsx'.format(name))
+            openpyxl.load_workbook(r'files\{0}\lead_board.xlsx'.format(name))
         except FileNotFoundError:  # if not exists
             workbook = openpyxl.Workbook()
             sheet = workbook.active
             sheet['A1'].value = "Names"
             sheet['B1'].value = "Points"
             sheet['C1'].value = "Time(s)"
-            workbook.save(r'extras\{0}\lead_board.xlsx'.format(name))
+            workbook.save(r'files\{0}\lead_board.xlsx'.format(name))
 
     # start the app
     running = True
@@ -91,20 +91,20 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:  # user pressed mouse
                 x_pos, y_pos = pygame.mouse.get_pos()
-                if 84 < x_pos < 616:  # choose a game
-                    if 279 < y_pos < 387:  # four in a row
+                if 59 < x_pos < 641:  # choose a game
+                    if 309 < y_pos < 418:  # four in a row
                         print("Four In a Row")
                         playTheGame(screen, 'Four In a Row')
                         screen.blit(start_screen, (0, 0))
                         pygame.display.update()
 
-                    elif 386 < y_pos < 499:  # tic tac toe
+                    elif 417 < y_pos < 525:  # tic tac toe
                         print("Tic Tac Toe")
                         playTheGame(screen, 'Tic Tac Toe')
                         screen.blit(start_screen, (0, 0))
                         pygame.display.update()
 
-                    elif 498 < y_pos < 619:  # hangman
+                    elif 524 < y_pos < 632:  # hangman
                         print("Hangman")
                         playTheGame(screen, 'Hangman')
                         screen.blit(start_screen, (0, 0))
