@@ -520,6 +520,10 @@ class FourInARow(Game):
         self.game_board = [[0 * x * y for x in range(self.cols)] for y in range(self.rows)]
 
     def playOneRound(self):
+        """
+        play one round of the game
+        :return: if there was a win, how many turns, if there was a tie
+        """
         turn = 0
         user_turn = False
         tie = False
@@ -715,6 +719,10 @@ class TicTacToe(Game):
         self.o_pic = pygame.image.load(r'photos\TicTacToe\o.png')
 
     def playOneRound(self):
+        """
+        play one round of the game
+        :return: if there was a win, how many turns, if there was a tie
+        """
         turn = 0
         user_turn = False
         win = False
@@ -922,7 +930,7 @@ class Hangman(Game):
     def playOneRound(self):
         """
         play one round of the game
-        :return: if there was a win, how many guesses
+        :return: if there was a win, how many guesses, if there was a tie
         """
         # initialize the game
         self.secret_word = random.choice(self.list_words)
