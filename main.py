@@ -66,7 +66,7 @@ def main():
     pygame.display.update()
 
     # play background music
-    pygame.mixer.Sound(r'music\bg_music.mp3').play(-1)
+    pygame.mixer.Sound(r'music\bg_music.wav').play(-1)
 
     # create execl(s) for lead boards
     # create the lead board

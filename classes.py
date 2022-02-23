@@ -6,6 +6,8 @@ import pygame
 from openpyxl import load_workbook
 import pandas
 
+
+pygame.init()
 pygame.font.init()
 
 
@@ -24,7 +26,7 @@ class Game:
         self.screen = screen  # pygame screen
         self.screen_size = 700
         self.bg_color = (173, 216, 230)
-        self.font = pygame.font.SysFont("arial bold", 50)  # font for pygame
+        self.font = pygame.font.SysFont('arial bold', 50)  # font for pygame
         self.stat = {'wins': 0, 'ties': 0, 'turns': [], 'time': [], 'choosing': []}
         self.lead_board_path = r'files\{0}\lead_board.xlsx'.format(name)
 
@@ -192,7 +194,7 @@ class Game:
         self.screen.fill(self.bg_color)
         pygame.display.update()
         sleep(0.5)
-        stat_msg = pygame.font.SysFont("arial bold", 60).render("Round ended!", False, (0, 0, 0), self.bg_color)
+        stat_msg = pygame.font.SysFont('arial bold', 60).render("Round ended!", False, (0, 0, 0), self.bg_color)
         self.screen.blit(stat_msg, (210, 20))
 
         # win msg
@@ -208,17 +210,17 @@ class Game:
             msg_win = "Computer won! Try again."
             msg_win_color = (255, 37, 37)
             prefix = 15
-        stat_msg = pygame.font.SysFont("arial bold", 60).render(msg_win, False, msg_win_color, self.bg_color)
+        stat_msg = pygame.font.SysFont('arial bold', 60).render(msg_win, False, msg_win_color, self.bg_color)
         self.screen.blit(stat_msg, (70 + prefix, 65))
 
         # points msg
-        point_msg = pygame.font.SysFont("arial bold", 50).render("You've got {0} points!".format(self.points),
+        point_msg = pygame.font.SysFont('arial bold', 50).render("You've got {0} points!".format(self.points),
                                                                  False, (0, 0, 0), self.bg_color)
         self.screen.blit(point_msg, (185, 115))
 
         # the stats
         for i in range(len(msg.split('\n')) - 1):
-            stat_msg = pygame.font.SysFont("arial", 38).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
+            stat_msg = pygame.font.SysFont('arial', 38).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
             k = 10 if i == 0 else 50
             self.screen.blit(stat_msg, (k, i * 50 + 172))
 
@@ -264,17 +266,17 @@ class Game:
         sleep(0.5)
 
         # the stats
-        stat_msg = pygame.font.SysFont("arial bold", 60).render("Game ended!", False, (0, 0, 0), self.bg_color)
+        stat_msg = pygame.font.SysFont('arial bold', 60).render("Game ended!", False, (0, 0, 0), self.bg_color)
         self.screen.blit(stat_msg, (210, 20))
 
         # points msg
-        point_msg = pygame.font.SysFont("arial bold", 50).render("You've got {0} points!".format(self.points),
+        point_msg = pygame.font.SysFont('arial bold', 50).render("You've got {0} points!".format(self.points),
                                                                  False, (0, 0, 0), self.bg_color)
         self.screen.blit(point_msg, (185, 70))
 
         # stat msg
         for i in range(len(msg.split('\n')) - 1):
-            stat_msg = pygame.font.SysFont("arial", 38).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
+            stat_msg = pygame.font.SysFont('arial', 38).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
             k = 10 if i == 0 else 50
             self.screen.blit(stat_msg, (k, i * 50 + 127))
 
@@ -473,7 +475,7 @@ class Game:
             prefix_y += 1  # to place in the current line
 
         # headlines
-        self.screen.blit(pygame.font.SysFont("ariel bold", 80).render("Lead board", False,
+        self.screen.blit(pygame.font.SysFont('ariel bold', 80).render("Lead board", False,
                                                                       (0, 0, 0), self.bg_color), (195, 30))
         self.screen.blit(self.font.render("Press the mouse to continue", False, (0, 0, 0), self.bg_color), (112, 630))
 
@@ -1031,7 +1033,7 @@ class Hangman(Game):
         self.screen.fill(self.bg_color)
 
         # headings
-        self.screen.blit(pygame.font.SysFont("arial bold", 80).render("Try to guess!",
+        self.screen.blit(pygame.font.SysFont('arial bold', 80).render("Try to guess!",
                                                                       False, (0, 0, 0), self.bg_color), (315, 100))
         self.screen.blit(self.font.render("Type the letters", False, (0, 0, 0), self.bg_color), (320, 165))
 
@@ -1054,7 +1056,7 @@ class Hangman(Game):
                 guess_bars_txt += "_"
             guess_bars_txt += "  "
 
-        guess_bars = pygame.font.SysFont("arial bold", 80).render(guess_bars_txt, False, (0, 0, 0), self.bg_color)
+        guess_bars = pygame.font.SysFont('arial bold', 80).render(guess_bars_txt, False, (0, 0, 0), self.bg_color)
         self.screen.blit(guess_bars, (330, 280))
         pygame.display.update()
 
@@ -1149,7 +1151,7 @@ class Hangman(Game):
         self.screen.fill(self.bg_color)
         pygame.display.update()
         sleep(0.5)
-        stat_msg = pygame.font.SysFont("arial bold", 60).render("Round ended!", False, (0, 0, 0), self.bg_color)
+        stat_msg = pygame.font.SysFont('arial bold', 60).render("Round ended!", False, (0, 0, 0), self.bg_color)
         self.screen.blit(stat_msg, (210, 20))
 
         # win msg
@@ -1162,17 +1164,17 @@ class Hangman(Game):
             msg_win = "You guessed wrong! Try again."
             msg_win_color = (255, 37, 37)
             prefix = 11
-        stat_msg = pygame.font.SysFont("arial bold", 60).render(msg_win, False, msg_win_color, self.bg_color)
+        stat_msg = pygame.font.SysFont('arial bold', 60).render(msg_win, False, msg_win_color, self.bg_color)
         self.screen.blit(stat_msg, (32 + prefix, 65))
 
         # points msg
-        point_msg = pygame.font.SysFont("arial bold", 50).render("You've got {0} points!".format(self.points),
+        point_msg = pygame.font.SysFont('arial bold', 50).render("You've got {0} points!".format(self.points),
                                                                  False, (0, 0, 0), self.bg_color)
         self.screen.blit(point_msg, (185, 115))
 
         # the stats
         for i in range(len(msg.split('\n')) - 1):
-            stat_msg = pygame.font.SysFont("arial", 38).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
+            stat_msg = pygame.font.SysFont('arial', 38).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
             k = 10 if i == 0 else 50
             self.screen.blit(stat_msg, (k, i * 50 + 172))
 
@@ -1218,17 +1220,17 @@ class Hangman(Game):
         sleep(0.5)
 
         # the stats
-        stat_msg = pygame.font.SysFont("arial bold", 60).render("Game ended!", False, (0, 0, 0), self.bg_color)
+        stat_msg = pygame.font.SysFont('arial bold', 60).render("Game ended!", False, (0, 0, 0), self.bg_color)
         self.screen.blit(stat_msg, (210, 20))
 
         # points msg
-        point_msg = pygame.font.SysFont("arial bold", 50).render("You've got {0} points!".format(self.points),
+        point_msg = pygame.font.SysFont('arial bold', 50).render("You've got {0} points!".format(self.points),
                                                                  False, (0, 0, 0), self.bg_color)
         self.screen.blit(point_msg, (185, 70))
 
         # stat msg
         for i in range(len(msg.split('\n')) - 1):
-            stat_msg = pygame.font.SysFont("arial", 38).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
+            stat_msg = pygame.font.SysFont('arial', 38).render(msg.split('\n')[i], False, (0, 0, 0), self.bg_color)
             k = 10 if i == 0 else 50
             self.screen.blit(stat_msg, (k, i * 50 + 127))
 
