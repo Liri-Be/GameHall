@@ -74,3 +74,10 @@ This directory has the music files of the game.
 In this directory there are four more directories -  
 1. General - has photos for the program itself (not for a specific game).  
 2. FourInARow, TicTacToe and Hangman - has photos related to each game - instructions etc.
+
+## Artributions
+1. <a href="https://www.flaticon.com/free-icons/board-game" title="board game icons">Board game icon for start screen and app icon was created by Good Ware - Flaticon</a>  
+2. <a href="https://www.flaticon.com/free-icons/x" title="x icons">X icon for tic tac toe was created by Stockio - Flaticon</a>  
+3. <a href="https://www.flaticon.com/free-icons/o" title="o icons">O icon for tic tac toe was created by Freepik - Flaticon</a>  
+4. <a href="https://www.flaticon.com/free-icons/hangman" title="hangman icons">Wood icon for hangman was created by surang - Flaticon</a>  
+5. <a href="https://www.flaticon.com/free-icons/sad" title="sad icons">Head icon for hangman was created by Freepik - Flaticon</a>
