@@ -1,7 +1,7 @@
 # GameHall
 Program for the classic games we all know - Four in a row, Tic Tac Toe, and Hangman.  
 The program is written in python and uses Pygame for GUI and Python 3.7.  
-Each game has five rounds. At the end of each round, the program presents the round statistics, such as the percentage of winning, etc. and at the end of the game (of the five rounds), the program presents the game statistics.  
+Each game has five rounds. At the end of each round, the program presents the round statistics, such as the percentage of winning, etc., and at the end of the game (of the five rounds), the program presents the game statistics.  
 Also, the user may choose to enter the lead board and see the other users in the lead board who were in the top five.  
 The user plays against the computer in Four in a row and Tic Tac Toe.  
 Each game starts with instructions of the game.
@@ -42,14 +42,14 @@ The user guesses the letters of the secret word. If they are wrong, the computer
 
 ## Files
 ### main.py
-The shell code - 
+The shellcode - 
 1. handles the choosing game part - the user chooses the game they want to play.
 2. runs the functions of each game while the user play - 
     - starts the game
     - present and update lead board
 
 ### classes.py
-Contatins all the code of the games and their classes.  
+Contains all the code of the games and their classes.  
 Handles the game itself - the functionality and important features of each game.
 #### classes
 There are four classes - 
@@ -64,16 +64,16 @@ There are four classes -
 
 ### files directory
 This directory has three more directories in it (one for each game) and in each one there are two xlsx files.  
-The first one include the users and their points and the time the game took them.  
-The second one is the same as the first one, but sorted first by points (most points at the top) and secondly by time (shortest time at the top).
+The first one includes the users and their points and the time the game took them.  
+The second one is the same as the first one but sorted first by points (most points at the top) and secondly by time (shortest time at the top).
 
 ### music directory
 This directory has the music files of the game.
 
 ### Photos directory
-In this directory there are four more directories -  
+In this directory, there are four more directories -  
 1. General - has photos for the program itself (not for a specific game).  
-2. FourInARow, TicTacToe and Hangman - has photos related to each game - instructions etc.
+2. FourInARow, TicTacToe, and Hangman - have photos related to each game - instructions, etc.
 
 ## Artributions
 1. <a href="https://www.flaticon.com/free-icons/board-game" title="board game icons">Board game icon for start screen and app icon was created by Good Ware - Flaticon</a>  
