@@ -62,12 +62,12 @@ There are four classes -
 4. Hangman -  
     This class handles the hangman game.
 
-### files directory
+### Files directory
 This directory has three more directories in it (one for each game) and in each one there are two xlsx files.  
 The first one includes the users and their points and the time the game took them.  
 The second one is the same as the first one but sorted first by points (most points at the top) and secondly by time (shortest time at the top).
 
-### music directory
+### Music directory
 This directory has the music files of the game.
 
 ### Photos directory
